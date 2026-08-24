@@ -12,9 +12,15 @@ class VectorStore:
         self.client = chromadb.PersistentClient(path=self.persist_directory)
         self.collection = self.client.get_or_create_collection(name=collection_name)
         
-        api_key = settings.openai_api_key or os.environ.get("OPENAI_API_KEY")
+        api_key = settings.openrouter_api_key or os.environ.get("OPENROUTER_API_KEY") or settings.openai_api_key or os.environ.get("OPENAI_API_KEY")
         if api_key:
-            self.embeddings = OpenAIEmbeddings(model="text-embedding-3-small", api_key=api_key)
+            is_openrouter = bool(settings.openrouter_api_key or os.environ.get("OPENROUTER_API_KEY"))
+            base_url = settings.openrouter_base_url if is_openrouter else None
+            self.embeddings = OpenAIEmbeddings(
+                model=settings.openrouter_embedding_model or "text-embedding-3-small",
+                api_key=api_key,
+                base_url=base_url
+            )
         else:
             self.embeddings = None # Useful for mocking tests without API keys
 

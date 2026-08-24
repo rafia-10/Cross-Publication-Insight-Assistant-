@@ -15,12 +15,13 @@ def test_database_initialization():
         
         # Create a test engine directly
         test_engine = create_engine(test_url)
-        
-        # Initialize
-        from app.database.models import Base
-        Base.metadata.create_all(bind=test_engine)
-        
-        assert os.path.exists(db_path)
+        try:
+            # Initialize
+            from app.database.models import Base
+            Base.metadata.create_all(bind=test_engine)
+            assert os.path.exists(db_path)
+        finally:
+            test_engine.dispose()
 
 def test_vector_store_initialization():
     # Provide ignore_errors to TemporaryDirectory if python 3.10+, or just handle it

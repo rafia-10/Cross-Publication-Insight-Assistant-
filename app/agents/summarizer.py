@@ -3,7 +3,7 @@ from typing import Dict, Any, Optional
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from app.config import settings
+from app.config import settings, get_chat_llm
 import json
 
 def load_prompt() -> str:
@@ -13,15 +13,7 @@ def load_prompt() -> str:
 
 class SummarizerAgent:
     def __init__(self, llm: Optional[Any] = None):
-        if not llm:
-            api_key = settings.openai_api_key or os.environ.get("OPENAI_API_KEY")
-            if api_key:
-                self.llm = ChatOpenAI(model="gpt-4o", api_key=api_key, temperature=0.3) # Slight temperature for natural phrasing
-            else:
-                self.llm = ChatOpenAI(model="gpt-4o", api_key="dummy", temperature=0.3)
-        else:
-            self.llm = llm
-            
+        self.llm = llm if llm is not None else get_chat_llm(temperature=0.3)
         self.system_prompt = load_prompt()
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", self.system_prompt),

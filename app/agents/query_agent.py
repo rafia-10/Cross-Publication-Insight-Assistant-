@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from app.database.vector_store import search_project_knowledge
-from app.config import settings
+from app.config import settings, get_chat_llm
 
 class QueryRoute(BaseModel):
     query_type: str = Field(..., description="aggregate, retrieve, compare, or unsupported")
@@ -14,14 +14,7 @@ class QueryRoute(BaseModel):
 
 class QueryAgent:
     def __init__(self, llm: Optional[Any] = None):
-        if not llm:
-            api_key = settings.openai_api_key or os.environ.get("OPENAI_API_KEY")
-            if api_key:
-                self.llm = ChatOpenAI(model="gpt-4o", api_key=api_key, temperature=0)
-            else:
-                self.llm = ChatOpenAI(model="gpt-4o", api_key="dummy", temperature=0)
-        else:
-            self.llm = llm
+        self.llm = llm if llm is not None else get_chat_llm(temperature=0)
             
     def route_query(self, user_query: str) -> QueryRoute:
         """

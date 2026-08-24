@@ -3,7 +3,7 @@ from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
-from app.config import settings
+from app.config import settings, get_chat_llm
 
 class FactCheckResult(BaseModel):
     status: str = Field(..., description="One of: verified, partial, unverified")
@@ -17,15 +17,7 @@ def load_prompt() -> str:
 
 class FactCheckerAgent:
     def __init__(self, llm: Optional[Any] = None):
-        if not llm:
-            api_key = settings.openai_api_key or os.environ.get("OPENAI_API_KEY")
-            if api_key:
-                self.llm = ChatOpenAI(model="gpt-4o", api_key=api_key, temperature=0)
-            else:
-                self.llm = ChatOpenAI(model="gpt-4o", api_key="dummy", temperature=0)
-        else:
-            self.llm = llm
-            
+        self.llm = llm if llm is not None else get_chat_llm(temperature=0)
         self.system_prompt = load_prompt()
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", self.system_prompt),

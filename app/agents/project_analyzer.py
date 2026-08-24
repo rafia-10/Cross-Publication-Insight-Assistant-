@@ -6,7 +6,7 @@ from langchain_core.prompts import SystemMessagePromptTemplate, HumanMessageProm
 from langgraph.prebuilt import create_react_agent
 from app.schemas.project import ProjectAnalysis
 from app.tools.repository_search import search_repository
-from app.config import settings
+from app.config import settings, get_chat_llm
 
 def load_prompt() -> str:
     prompt_path = os.path.join(os.path.dirname(__file__), "..", "..", "prompts", "project_analyzer.txt")
@@ -29,16 +29,7 @@ def create_search_tool(repo_path: str):
 
 class ProjectAnalyzer:
     def __init__(self, llm: Optional[Any] = None):
-        if not llm:
-            api_key = settings.openai_api_key or os.environ.get("OPENAI_API_KEY")
-            # If no API key is provided, we can still instantiate the class for testing, but it will fail on invoke
-            if api_key:
-                self.llm = ChatOpenAI(model="gpt-4o", api_key=api_key, temperature=0)
-            else:
-                self.llm = ChatOpenAI(model="gpt-4o", api_key="dummy_key", temperature=0) # For mocked tests
-        else:
-            self.llm = llm
-            
+        self.llm = llm if llm is not None else get_chat_llm(temperature=0)
         self.system_prompt = load_prompt()
 
     def analyze(self, repo_path: str, project_name: str, source_url: str, source_type: str = "github") -> ProjectAnalysis:
