@@ -1,0 +1,16 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.git/
+.gitignore
+.pytest_cache/
+chroma_data/
+insight.db
+data/
+evaluation_results.json
+.DS_Store
