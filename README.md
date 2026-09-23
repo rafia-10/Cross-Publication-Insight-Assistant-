@@ -253,3 +253,7 @@ python -m pytest -v
 # Run evaluation test suite
 python -m pytest tests/test_evaluation.py -v
 ```
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
