@@ -15,7 +15,11 @@ class Settings(BaseSettings):
     
     database_url: str = "sqlite:///./insight.db"
     chroma_persist_directory: str = "./chroma_data"
-    
+
+    # Logging configuration
+    log_level: str = "INFO"   # DEBUG | INFO | WARNING | ERROR
+    log_format: str = "json"  # json | text
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
 settings = Settings()

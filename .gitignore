@@ -8,4 +8,4 @@ chroma_data/
 insight.db
 data/
 evaluation_results.json
-
+**/__pycache__/*
